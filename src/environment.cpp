@@ -43,9 +43,19 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     
     // RENDER OPTIONS
     bool renderScene = true;
+    // renderScene = false;  //As we only wants to view the pointcloud
     std::vector<Car> cars = initHighway(renderScene, viewer);
     
     // TODO:: Create lidar sensor 
+    // signature: Lidar(std::vector<Car> setCars, double setGroundSlope)
+    Lidar * lidar = new Lidar(cars, 0.0);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr scan= lidar->scan();
+
+    // renderRays(pcl::visualization::PCLVisualizer::Ptr& viewer, const Vect3& origin, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud)
+    // renderRays(viewer,lidar->position ,scan);
+
+    // renderPointCloud(pcl::visualization::PCLVisualizer::Ptr& viewer, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, std::string name, Color color)    
+    renderPointCloud(viewer, scan, "Point cloud", Color(1,0,0));
 
     // TODO:: Create point processor
   
@@ -80,8 +90,10 @@ int main (int argc, char** argv)
 {
     std::cout << "starting enviroment" << std::endl;
 
+    // PCL simulation viewver
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     CameraAngle setAngle = XY;
+    // viewver is passed as a referece so any changes made to it will relect here too   
     initCamera(setAngle, viewer);
     simpleHighway(viewer);
 
