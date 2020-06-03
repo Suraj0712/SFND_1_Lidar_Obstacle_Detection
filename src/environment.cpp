@@ -63,9 +63,21 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
     // std::pair<typename pcl::PointCloud<pcl::PointXYZ>::Ptr, typename pcl::PointCloud<pcl::PointXYZ>::Ptr> ProcessPointClouds<PointT>::SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold)
     std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = ppc->SegmentPlane(scan, 100, 0.2);
+    // renderPointCloud(viewer, segmentCloud.first, "obstacles", Color(1, 0, 0));
+    // renderPointCloud(viewer, segmentCloud.second, "plane", Color(0, 0, 1));  
 
-    renderPointCloud(viewer, segmentCloud.first, "obstacles", Color(1, 0, 0));
-    renderPointCloud(viewer, segmentCloud.second, "plane", Color(0, 0, 1));  
+    std::vector<typename pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = ppc->Clustering(segmentCloud.first, 1.0, 3, 30);
+
+    int cluster_num =0;
+    std::vector<Color> colors = {Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1), Color(1, 0, 1)};
+    for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster : clusters)
+    {
+        renderPointCloud(viewer, cluster, "car" + std::to_string(cluster_num), colors[cluster_num % colors.size()]);
+        Box box = ppc->BoundingBox(cluster);
+    	renderBox(viewer, box, cluster_num);
+
+        cluster_num++;
+    }
 }
 
 
