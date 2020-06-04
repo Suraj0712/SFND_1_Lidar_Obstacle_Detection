@@ -1,64 +1,104 @@
-# Sensor Fusion Self-Driving Car Course
+[![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
+
+# Udacity Nanodegree: Sensor Fusion
+
+## Project 01: Lidar Obstacle Detection
 
 <img src="media/ObstacleDetectionFPS.gif" width="700" height="400" />
 
-### Welcome to the Sensor Fusion course for self-driving cars.
+### Project Objective
+This project aims to detect the obstacle in the point cloud data received from the car. The project pipeline is as follows.
+```
+1. Load the .pcd file
+2. Downsample the data using VoxelGrid filter
+3. Extract the area of interest using the box filters
+4. Segment the cloud using the RANSAC to separate the ground plane and obstacles
+5. Use KdTree and Euclidean Clustering based clustering algorithm for clustering the obstacles
+6. Draw a bounding box around the object
+7. Loop through the .pcd files and stream the results
 
-In this course we will be talking about sensor fusion, whch is the process of taking data from multiple sensors and combining it to give us a better understanding of the world around us. we will mostly be focusing on two sensors, lidar, and radar. By the end we will be fusing the data from these two sensors to track multiple cars on the road, estimating their positions and speed.
+```
+### Directory Structure
 
-**Lidar** sensing gives us high resolution data by sending out thousands of laser signals. These lasers bounce off objects, returning to the sensor where we can then determine how far away objects are by timing how long it takes for the signal to return. Also we can tell a little bit about the object that was hit by measuring the intesity of the returned signal. Each laser ray is in the infrared spectrum, and is sent out at many different angles, usually in a 360 degree range. While lidar sensors gives us very high accurate models for the world around us in 3D, they are currently very expensive, upwards of $60,000 for a standard unit.
+```
+.
+├── CMakeLists.txt                        # Top level Cmake file
+├── media                                 # Folder containing the screenshots of the results
+│   ├── LIDAR_OD.mkv
+│   ├── ObstacleDetectionFPS.gif
+│   ├── sf***.png
+├── README.md                             # Readme file for reference
+└── src
+    ├── environment.cpp                   # File to setup the environment
+    ├── processPointClouds.cpp            # File containing actual implementation of segmentation, custering and IO
+    ├── processPointClouds.h
+    ├── quiz                              # Quiz folder containing implementation of KDtree and RANSAC
+    │   ├── cluster
+    │   │   ├── cluster.cpp
+    │   │   ├── CMakeLists.txt
+    │   │   └── kdtree.h
+    │   └── ransac
+    │       ├── CMakeLists.txt
+    │       └── ransac2d.cpp
+    ├── render                            # Package for data visualization
+    │   ├── box.h
+    │   ├── render.cpp
+    │   └── render.h
+    └── sensors
+        ├── data
+        │   └── pcd
+        │       ├── data_1
+        │       │   ├── *****.pcd
+        │       ├── data_2
+        │       │   ├── *****.pcd
+        │       └── simpleHighway.pcd
+        └── lidar.h
 
-**Radar** data is typically very sparse and in a limited range, however it can directly tell us how fast an object is moving in a certain direction. This ability makes radars a very pratical sensor for doing things like cruise control where its important to know how fast the car infront of you is traveling. Radar sensors are also very affordable and common now of days in newer cars.
+```
+### How to run
 
-**Sensor Fusion** by combing lidar's high resoultion imaging with radar's ability to measure velocity of objects we can get a better understanding of the sorrounding environment than we could using one of the sensors alone.
-
-
-## Installation
-
-### Ubuntu 
-
-```bash
-$> sudo apt install libpcl-dev
-$> cd ~
-$> git clone https://github.com/udacity/SFND_Lidar_Obstacle_Detection.git
-$> cd SFND_Lidar_Obstacle_Detection
-$> mkdir build && cd build
-$> cmake ..
-$> make
-$> ./environment
+#### 1. First of all, clone this repo:
+```
+git clone git@github.com:Suraj0712/SFND_1_Lidar_Obstacle_Detection.git
 ```
 
-### Windows 
+#### 2. Package dependencies 
+```
+PCL
+CMake
+system
+filesystem
+thread
+date_time
+iostreams
+serialization
+chrono
+atomic
+regex
+```
 
-http://www.pointclouds.org/downloads/windows.html
+#### 3. Build the project
+```
+$ cd SFND_1_Lidar_Obstacle_Detection
+$ mkdir build && cd build
+$ cmake ..
+$ make 
+$ ./environment
+```
+### 4. Results
 
-### MAC
+#### Segmentation 
+![alt txt](media/sf6.png)
 
-#### Install via Homebrew
-1. install [homebrew](https://brew.sh/)
-2. update homebrew 
-	```bash
-	$> brew update
-	```
-3. add  homebrew science [tap](https://docs.brew.sh/Taps) 
-	```bash
-	$> brew tap brewsci/science
-	```
-4. view pcl install options
-	```bash
-	$> brew options pcl
-	```
-5. install PCL 
-	```bash
-	$> brew install pcl
-	```
+#### RANSAC 
+![alt txt](media/sf7.png)
 
-#### Prebuilt Binaries via Universal Installer
-http://www.pointclouds.org/downloads/macosx.html  
-NOTE: very old version 
+#### Clustering 
+![alt txt](media/sf8.png)
 
-#### Build from Source
+#### KdTree
+![alt txt](media/sf9.png)
 
-[PCL Source Github](https://github.com/PointCloudLibrary/pcl)
 
-[PCL Mac Compilation Docs](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_macosx.php)
+
+
