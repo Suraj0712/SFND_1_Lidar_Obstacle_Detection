@@ -7,7 +7,15 @@
 <img src="media/ObstacleDetectionFPS.gif" width="700" height="400" />
 
 ### Project Objective
-This project aims to detect the obstacle in the point cloud data received from the car. The project pipeline is as follows.
+
+This project aims to detect the obstacle in the point cloud data received from the car.
+
+- **Working with Point Cloud Data** using the [Point Cloud Library](https://pointcloudlibrary.github.io/) (PCL), including streaming PCD files,
+- Segmenting the road from non-road points by **fitting a plane using RANSAC**,
+- Grouping points using **Euclidean Clustering via Kd-trees** to find obstacles,
+- **Fitting oriented bounding boxes** over clustered obstacle points to simplify tracking and collision avoidance.
+
+The project pipeline is as follows.
 ```
 1. Load the .pcd file
 2. Downsample the data using VoxelGrid filter
