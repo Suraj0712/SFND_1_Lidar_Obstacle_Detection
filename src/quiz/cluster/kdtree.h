@@ -3,45 +3,46 @@
 
 #include "../../render/render.h"
 
-
 // Structure to represent node of kd tree
 struct Node
 {
 	std::vector<float> point;
 	int id;
-	Node* left;
-	Node* right;
+	Node *left;
+	Node *right;
 
 	Node(std::vector<float> arr, int setId)
-	:	point(arr), id(setId), left(NULL), right(NULL)
-	{}
+		: point(arr), id(setId), left(NULL), right(NULL)
+	{
+	}
 };
 
 struct KdTree
 {
-	Node* root;
+	Node *root;
 	int dimension;
 
-	KdTree()
-	: root(NULL)
-	{}
-
-	void insertRec(Node *&node, std::vector<float> point, int id, int depth) 
+	KdTree(int dim = 3)
+		: root(NULL), dimension(dim)
 	{
-		if (node == NULL) 
+	}
+
+	void _insert(Node *&node, std::vector<float> point, int id, int depth)
+	{
+		if (node == NULL)
 		{
 			node = new Node(point, id);
 		}
-		else 
+		else
 		{
 			uint dim = depth % this->dimension;
-			if (node->point[dim] > point[dim]) 
+			if (node->point[dim] > point[dim])
 			{
-				insertRec(node->left, point, id, depth+1);
-			} 
-			else 
+				_insert(node->left, point, id, depth + 1);
+			}
+			else
 			{
-				insertRec(node->right, point, id, depth+1);
+				_insert(node->right, point, id, depth + 1);
 			}
 		}
 	}
@@ -50,48 +51,48 @@ struct KdTree
 	{
 		// TODO: Fill in this function to insert a new point into the tree
 		// the function should create a new node and place correctly with in the root
-		insertRec(root, point, id, 0);
+		_insert(root, point, id, 0);
 	}
 
-	bool checkOverlapWithBox(const std::vector<float> target, const std::vector<float> point, float distanceTol) 
+	bool checkOverlapWithBox(const std::vector<float> target, const std::vector<float> point, float distanceTol)
 	{
 		bool inside = true;
-		for (int dim = 0; dim < this->dimension; dim++) 
+		for (int dim = 0; dim < this->dimension; dim++)
 		{
 			inside = inside && (target[dim] - distanceTol <= point[dim]) && (target[dim] + distanceTol >= point[dim]);
 		}
 		return inside;
 	}
 
-	bool checkDistance(const std::vector<float> target, const std::vector<float> point, float distanceTol) 
+	bool checkDistance(const std::vector<float> target, const std::vector<float> point, float distanceTol)
 	{
 		float distance = 0.0;
-		for (int dim = 0; dim < this->dimension; dim++) 
+		for (int dim = 0; dim < this->dimension; dim++)
 		{
 			distance += std::pow(target[dim] - point[dim], 2);
 		}
 		return std::sqrt(distance) <= distanceTol;
 	}
 
-	void searchRec(std::vector<int> &ids, const Node *node, std::vector<float> target, float distanceTol, int depth) 
+	void _search(std::vector<int> &ids, const Node *node, std::vector<float> target, float distanceTol, int depth)
 	{
-		if (node != NULL) 
+		if (node != NULL)
 		{
 			uint dim = depth % this->dimension;
-			if (checkOverlapWithBox(target, node->point, distanceTol)) 
+			if (checkOverlapWithBox(target, node->point, distanceTol))
 			{
-				if (checkDistance(target, node->point, distanceTol)) 
+				if (checkDistance(target, node->point, distanceTol))
 				{
 					ids.push_back(node->id);
 				}
 			}
-			if (target[dim] - distanceTol < node->point[dim]) 
+			if (target[dim] - distanceTol < node->point[dim])
 			{
-				searchRec(ids, node->left, target, distanceTol, depth+1);
+				_search(ids, node->left, target, distanceTol, depth + 1);
 			}
-			if (target[dim] + distanceTol > node->point[dim]) 
+			if (target[dim] + distanceTol > node->point[dim])
 			{
-				searchRec(ids, node->right, target, distanceTol, depth+1);
+				_search(ids, node->right, target, distanceTol, depth + 1);
 			}
 		}
 	}
@@ -100,13 +101,7 @@ struct KdTree
 	std::vector<int> search(std::vector<float> target, float distanceTol)
 	{
 		std::vector<int> ids;
-		searchRec(ids, root, target, distanceTol, 0);
+		_search(ids, root, target, distanceTol, 0);
 		return ids;
 	}
-	
-
 };
-
-
-
-
